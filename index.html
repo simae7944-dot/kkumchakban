@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>꿈책방</title>
+<style>
+body{
+    margin:0;
+    overflow-y:auto;
+    font-family:"Noto Sans KR", sans-serif;
+    background:linear-gradient(160deg, #FFF7EC 0%, #FDEFE4 35%, #E8F3EC 100%);
+    min-height:100vh;
+}
+#menu-screen{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+#menu{
+    text-align:center;
+}
+#title{
+    color:#3E4A3D;
+    font-size:72px;
+    font-weight:700;
+    margin-bottom:70px;
+    letter-spacing:4px;
+}
+.option{
+    display:inline-block;
+    color:#5C6B57;
+    font-size:20px;
+    font-weight:500;
+    margin:0 12px;
+    padding:12px 28px;
+    cursor:pointer;
+    transition:0.2s;
+    background:rgba(255,255,255,0.75);
+    border-radius:30px;
+    box-shadow:0 4px 14px rgba(120,110,90,0.12);
+}
+.option:hover{
+    transform:translateY(-3px);
+    background:#FFFFFF;
+    box-shadow:0 8px 20px rgba(120,110,90,0.18);
+    color:#2E7D5B;
+}
+#option-row{
+    margin-top:10px;
+}
+#admin-toggle{
+    margin-top:40px;
+    font-size:13px;
+    color:#9A9A8E;
+    cursor:pointer;
+    text-decoration:underline;
+}
+#admin-toggle:hover{
+    color:#5C6B57;
+}
+.page-screen{
+    display:none;
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    box-sizing:border-box;
+    padding:60px 20px 80px;
+}
+.page-inner{
+    max-width:640px;
+    margin:0 auto;
+}
+.page-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+}
+.page-header h1{
+    color:#3E4A3D;
+    font-size:36px;
+    letter-spacing:2px;
+    margin:0;
+}
+.back-btn{
+    color:#5C6B57;
+    font-size:15px;
+    cursor:pointer;
+    background:rgba(255,255,255,0.8);
+    padding:8px 18px;
+    border-radius:20px;
+    transition:0.2s;
+    box-shadow:0 2px 8px rgba(120,110,90,0.12);
+    white-space:nowrap;
+}
+.back-btn:hover{
+    background:#FFFFFF;
+    color:#2E7D5B;
+}
+.page-sub{
+    color:#7A8478;
+    font-size:15px;
+    margin-bottom:20px;
+}
+.add-btn{
+    display:block;
+    width:100%;
+    padding:14px;
+    margin-bottom:20px;
+    background:#7BBF9E;
+    border:none;
+    color:white;
+    font-size:16px;
+    font-weight:500;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.2s;
+    box-shadow:0 4px 14px rgba(123,191,158,0.35);
+}
+.add-btn:hover{
+    background:#67AC8A;
+}
+.post-form{
+    display:none;
+    background:rgba(255,255,255,0.9);
+    border:1px solid rgba(120,110,90,0.15);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:24px;
+    box-shadow:0 4px 14px rgba(120,110,90,0.1);
+}
+.post-form input[type="text"], .post-form input[type="password"], .post-form textarea{
+    width:100%;
+    box-sizing:border-box;
+    padding:10px 12px;
+    margin-bottom:12px;
+    border-radius:10px;
+    border:1px solid rgba(120,110,90,0.2);
+    font-family:inherit;
+    font-size:15px;
+    background:#FFFFFF;
+    color:#3E4A3D;
+}
+.post-form textarea{
+    min-height:80px;
+    resize:vertical;
+}
+.post-form label.file-label{
+    display:block;
+    font-size:13px;
+    color:#7A8478;
+    margin-bottom:8px;
+}
+.img-preview{
+    max-width:100%;
+    max-height:180px;
+    border-radius:10px;
+    margin-bottom:12px;
+    display:none;
+}
+.form-buttons{
+    display:flex;
+    gap:10px;
+}
+.form-buttons button{
+    flex:1;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    font-size:15px;
+    cursor:pointer;
+}
+.btn-primary{
+    background:#7BBF9E;
+    color:#ffffff;
+    font-weight:700;
+}
+.btn-primary:hover{
+    background:#67AC8A;
+}
+.btn-secondary{
+    background:transparent;
+    color:#5C6B57;
+    border:1px solid rgba(120,110,90,0.25) !important;
+}
+.form-error{
+    color:#D8674F;
+    font-size:13px;
+    margin-bottom:10px;
+    display:none;
+}
+.post-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+.post-card{
+    background:rgba(255,255,255,0.85);
+    border:1px solid rgba(120,110,90,0.12);
+    border-radius:14px;
+    padding:16px 18px;
+    color:#3E4A3D;
+    box-shadow:0 3px 10px rgba(120,110,90,0.08);
+}
+.post-card img{
+    width:100%;
+    max-height:280px;
+    object-fit:cover;
+    border-radius:10px;
+    margin-bottom:12px;
+    display:block;
+}
+.post-title{
+    font-weight:700;
+    font-size:17px;
+    margin-bottom:6px;
+    color:#2E7D5B;
+}
+.post-text{
+    font-size:15px;
+    line-height:1.6;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+.post-time{
+    font-size:12px;
+    color:#8A8A80;
+    margin-top:10px;
+}
+.post-actions{
+    display:none;
+    gap:8px;
+    margin-top:12px;
+}
+.post-actions button{
+    padding:6px 14px;
+    border-radius:8px;
+    border:1px solid rgba(120,110,90,0.25);
+    background:#FFFFFF;
+    color:#5C6B57;
+    font-size:13px;
+    cursor:pointer;
+}
+.post-actions button:hover{
+    background:#F3F0E8;
+}
+.post-actions .delete-btn{
+    color:#D8674F;
+    border-color:rgba(216,103,79,0.35);
+}
+.empty-state, .loading-state{
+    color:#7A8478;
+    text-align:center;
+    padding:40px 0;
+    font-size:15px;
+}
+.memo-name{
+    font-weight:700;
+    font-size:15px;
+    margin-bottom:6px;
+    color:#2E7D5B;
+}
+.memo-text{
+    font-size:15px;
+    line-height:1.5;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+</style>
+</head>
+<body>
+
+<div id="menu-screen">
+    <div id="menu">
+        <div id="title">꿈책방</div>
+        <div id="option-row">
+            <span class="option" onclick="openScreen('activity-screen')">activity</span>
+            <span class="option" onclick="openScreen('item-screen')">item</span>
+            <span class="option" onclick="openScreen('memo-screen')">memo</span>
+        </div>
+    </div>
+    <div id="admin-toggle" onclick="toggleAdmin()">관리자 로그인</div>
+</div>
+
+<div id="activity-screen" class="page-screen" data-section="activity">
+    <div class="page-inner">
+        <div class="page-header">
+            <h1>activity</h1>
+            <div class="back-btn" onclick="closeScreen('activity-screen')">← 돌아가기</div>
+        </div>
+        <div class="page-sub">우리들의 이야기</div>
+
+        <button class="add-btn" onclick="showForm('activity')">+ 새 글 추가</button>
+        <div class="post-form" id="activity-form"></div>
+
+        <div class="loading-state" id="activity-loading">불러오는 중...</div>
+        <div class="empty-state" id="activity-empty" style="display:none;">아직 등록된 글이 없어요.</div>
+        <div class="post-list" id="activity-list"></div>
+    </div>
+</div>
+
+
+<div id="item-screen" class="page-screen" data-section="item">
+    <div class="page-inner">
+        <div class="page-header">
+            <h1>item</h1>
+            <div class="back-btn" onclick="closeScreen('item-screen')">← 돌아가기</div>
+        </div>
+        <div class="page-sub">꿈책방의 소소한 굿즈</div>
+
+        <button class="add-btn" onclick="showForm('item')">+ 새 상품 추가</button>
+        <div class="post-form" id="item-form"></div>
+
+        <div class="loading-state" id="item-loading">불러오는 중...</div>
+        <div class="empty-state" id="item-empty" style="display:none;">아직 등록된 상품이 없어요.</div>
+        <div class="post-list" id="item-list"></div>
+    </div>
+</div>
+
+<div id="memo-screen" class="page-screen" data-section="memo">
+    <div class="page-inner">
+        <div class="page-header">
+            <h1>memo</h1>
+            <div class="back-btn" onclick="closeScreen('memo-screen')">← 돌아가기</div>
+        </div>
+
+        <button class="add-btn" style="display:block;" onclick="showMemoForm()">글쓰기</button>
+        <div class="post-form" id="memo-form">
+            <div class="form-error" id="memo-form-error"></div>
+            <input type="password" id="memo-pw-input" placeholder="비밀번호">
+            <input type="text" id="memo-name-input" placeholder="닉네임">
+            <textarea id="memo-text-input" placeholder="남기고 싶은 글을 적어주세요"></textarea>
+            <div class="form-buttons">
+                <button class="btn-secondary" onclick="hideMemoForm()">취소</button>
+                <button class="btn-primary" id="memo-submit-btn" onclick="submitMemo()">등록</button>
+            </div>
+        </div>
+
+        <div class="loading-state" id="memo-loading">불러오는 중...</div>
+        <div class="empty-state" id="memo-empty" style="display:none;">아직 남겨진 글이 없어요. 첫 글을 남겨보세요!</div>
+        <div class="post-list" id="memo-list"></div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
+    query, orderBy, onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+    getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDvDGgENyLxLMwkC7X7WjcQ0b4WjkTA4TI",
+    authDomain: "kkumchaekbang.firebaseapp.com",
+    projectId: "kkumchaekbang",
+    storageBucket: "kkumchaekbang.firebasestorage.app",
+    messagingSenderId: "336583381103",
+    appId: "1:336583381103:web:b971880c6c1f75202fbd9a",
+    measurementId: "G-0J0CKZ0Y87"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+const ADMIN_PASSWORD = "kkumBookroom2026";
+const MEMO_PASSWORD = "kkumBookroom2026";
+
+let isAdmin = sessionStorage.getItem("kkumAdmin") === "1";
+
+const SECTIONS = {
+    activity: { collectionName: "activity_posts", titleLabel: "제목", textLabel: "내용" },
+    item:     { collectionName: "item_posts",     titleLabel: "상품명", textLabel: "설명" }
+};
+
+window.toggleAdmin = function(){
+    if(isAdmin){
+        isAdmin = false;
+        sessionStorage.removeItem("kkumAdmin");
+        applyAdminUI();
+        document.getElementById("admin-toggle").textContent = "관리자 로그인";
+        return;
+    }
+    const pw = window.prompt("관리자 비밀번호를 입력하세요");
+    if(pw === null) return;
+    if(pw !== ADMIN_PASSWORD){
+        alert("비밀번호가 올바르지 않습니다.");
+        return;
+    }
+    isAdmin = true;
+    sessionStorage.setItem("kkumAdmin", "1");
+    applyAdminUI();
+};
+
+function applyAdminUI(){
+    document.getElementById("admin-toggle").textContent = isAdmin ? "관리자 로그아웃" : "관리자 로그인";
+    document.querySelectorAll(".post-actions").forEach(el => {
+        el.style.display = isAdmin ? "flex" : "none";
+    });
+}
+
+window.openScreen = function(id){
+    document.getElementById("menu-screen").style.display = "none";
+    document.getElementById(id).style.display = "block";
+};
+window.closeScreen = function(id){
+    document.getElementById(id).style.display = "none";
+    document.getElementById("menu-screen").style.display = "flex";
+    if(id === "memo-screen"){
+        hideMemoForm();
+    }
+};
+
+function renderPostForm(sectionKey, editingId, existing){
+    const cfg = SECTIONS[sectionKey];
+    const formEl = document.getElementById(sectionKey + "-form");
+    const existingImg = existing && existing.imageUrl ? existing.imageUrl : "";
+    const needsPassword = !isAdmin;
+    formEl.innerHTML = `
+        <div class="form-error" id="${sectionKey}-form-error"></div>
+        ${needsPassword ? `<input type="password" id="${sectionKey}-pw-input" placeholder="비밀번호">` : ""}
+        <input type="text" id="${sectionKey}-title-input" placeholder="${cfg.titleLabel}" value="${existing ? escapeAttr(existing.title) : ""}">
+        <textarea id="${sectionKey}-text-input" placeholder="${cfg.textLabel}">${existing ? escapeHtml(existing.text) : ""}</textarea>
+        <label class="file-label">사진 (선택)</label>
+        <img class="img-preview" id="${sectionKey}-img-preview" src="${existingImg}" style="${existingImg ? "display:block;" : ""}">
+        <input type="file" accept="image/*" id="${sectionKey}-file-input">
+        <div class="form-buttons" style="margin-top:12px;">
+            <button class="btn-secondary" type="button" onclick="hideForm('${sectionKey}')">취소</button>
+            <button class="btn-primary" type="button" id="${sectionKey}-submit-btn">${editingId ? "수정 완료" : "등록"}</button>
+        </div>
+    `;
+    formEl.style.display = "block";
+    formEl.dataset.editingId = editingId || "";
+    formEl.dataset.existingImage = existingImg;
+
+    document.getElementById(sectionKey + "-file-input").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = document.getElementById(sectionKey + "-img-preview");
+            img.src = ev.target.result;
+            img.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById(sectionKey + "-submit-btn").addEventListener("click", () => submitPost(sectionKey));
+}
+
+window.showForm = function(sectionKey){
+    renderPostForm(sectionKey, null, null);
+    document.querySelector(`#${sectionKey}-screen .add-btn`).style.display = "none";
+};
+
+window.hideForm = function(sectionKey){
+    const formEl = document.getElementById(sectionKey + "-form");
+    formEl.style.display = "none";
+    formEl.innerHTML = "";
+    document.querySelector(`#${sectionKey}-screen .add-btn`).style.display = "block";
+};
+
+window.editPost = function(sectionKey, id, title, text, imageUrl){
+    renderPostForm(sectionKey, id, { title, text, imageUrl });
+    document.querySelector(`#${sectionKey}-screen .add-btn`).style.display = "none";
+    document.getElementById(sectionKey + "-form").scrollIntoView({ behavior: "smooth", block: "center" });
+};
+
+window.deletePost = async function(sectionKey, id){
+    if(!confirm("이 글을 삭제할까요?")) return;
+    try{
+        await deleteDoc(doc(db, SECTIONS[sectionKey].collectionName, id));
+    }catch(e){
+        alert("삭제에 실패했어요.");
+    }
+};
+
+async function submitPost(sectionKey){
+    const cfg = SECTIONS[sectionKey];
+    const formEl = document.getElementById(sectionKey + "-form");
+    const editingId = formEl.dataset.editingId;
+    const errorEl = document.getElementById(sectionKey + "-form-error");
+    const title = document.getElementById(sectionKey + "-title-input").value.trim();
+    const text = document.getElementById(sectionKey + "-text-input").value.trim();
+    const fileInput = document.getElementById(sectionKey + "-file-input");
+    const file = fileInput.files[0];
+
+    errorEl.style.display = "none";
+
+    if(!isAdmin){
+        const pwInput = document.getElementById(sectionKey + "-pw-input");
+        const pw = pwInput ? pwInput.value : "";
+        if(pw !== ADMIN_PASSWORD){
+            errorEl.textContent = "비밀번호가 올바르지 않습니다.";
+            errorEl.style.display = "block";
+            return;
+        }
+    }
+    if(!title){
+        errorEl.textContent = `${cfg.titleLabel}을(를) 입력해주세요.`;
+        errorEl.style.display = "block";
+        return;
+    }
+
+    const submitBtn = document.getElementById(sectionKey + "-submit-btn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "저장 중...";
+
+    try{
+        let imageUrl = formEl.dataset.existingImage || "";
+        if(file){
+            const path = `${cfg.collectionName}/${Date.now()}_${file.name}`;
+            const storageRef = ref(storage, path);
+            await uploadBytes(storageRef, file);
+            imageUrl = await getDownloadURL(storageRef);
+        }
+
+        if(editingId){
+            await updateDoc(doc(db, cfg.collectionName, editingId), {
+                title, text, imageUrl
+            });
+        }else{
+            await addDoc(collection(db, cfg.collectionName), {
+                title, text, imageUrl,
+                createdAt: serverTimestamp()
+            });
+        }
+        hideForm(sectionKey);
+    }catch(e){
+        errorEl.textContent = "저장에 실패했어요. 잠시 후 다시 시도해주세요.";
+        errorEl.style.display = "block";
+    }finally{
+        submitBtn.disabled = false;
+        submitBtn.textContent = editingId ? "수정 완료" : "등록";
+    }
+}
+
+function escapeHtml(str){
+    const div = document.createElement("div");
+    div.textContent = str || "";
+    return div.innerHTML;
+}
+function escapeAttr(str){
+    return (str || "").replace(/"/g, "&quot;");
+}
+
+function setupSectionListener(sectionKey){
+    const cfg = SECTIONS[sectionKey];
+    const listEl = document.getElementById(sectionKey + "-list");
+    const emptyEl = document.getElementById(sectionKey + "-empty");
+    const loadingEl = document.getElementById(sectionKey + "-loading");
+
+    const q = query(collection(db, cfg.collectionName), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+        loadingEl.style.display = "none";
+        listEl.innerHTML = "";
+        if(snapshot.empty){
+            emptyEl.style.display = "block";
+            return;
+        }
+        emptyEl.style.display = "none";
+        snapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const card = document.createElement("div");
+            card.className = "post-card";
+
+            let html = "";
+            if(data.imageUrl){
+                html += `<img src="${data.imageUrl}" alt="">`;
+            }
+            html += `<div class="post-title">${escapeHtml(data.title)}</div>`;
+            if(data.text){
+                html += `<div class="post-text">${escapeHtml(data.text)}</div>`;
+            }
+            if(data.createdAt && data.createdAt.toDate){
+                html += `<div class="post-time">${data.createdAt.toDate().toLocaleString("ko-KR")}</div>`;
+            }
+            html += `<div class="post-actions" style="display:${isAdmin ? "flex" : "none"};">
+                <button class="edit-btn">수정</button>
+                <button class="delete-btn">삭제</button>
+            </div>`;
+            card.innerHTML = html;
+
+            card.querySelector(".edit-btn").addEventListener("click", () => {
+                window.editPost(sectionKey, docSnap.id, data.title, data.text || "", data.imageUrl || "");
+            });
+            card.querySelector(".delete-btn").addEventListener("click", () => {
+                window.deletePost(sectionKey, docSnap.id);
+            });
+
+            listEl.appendChild(card);
+        });
+    }, () => {
+        loadingEl.textContent = "글을 불러오지 못했어요. 잠시 후 다시 시도해주세요.";
+        loadingEl.style.display = "block";
+    });
+}
+
+Object.keys(SECTIONS).forEach(setupSectionListener);
+applyAdminUI();
+
+/* 메모판 (기존 기능 유지) */
+const memoListEl = document.getElementById("memo-list");
+const memoEmptyEl = document.getElementById("memo-empty");
+const memoLoadingEl = document.getElementById("memo-loading");
+
+const memoQ = query(collection(db, "memos"), orderBy("createdAt", "desc"));
+onSnapshot(memoQ, (snapshot) => {
+    memoLoadingEl.style.display = "none";
+    memoListEl.innerHTML = "";
+    if(snapshot.empty){
+        memoEmptyEl.style.display = "block";
+        return;
+    }
+    memoEmptyEl.style.display = "none";
+    snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const card = document.createElement("div");
+        card.className = "post-card";
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "memo-name";
+        nameEl.textContent = data.name || "익명";
+
+        const textEl = document.createElement("div");
+        textEl.className = "memo-text";
+        textEl.textContent = data.text || "";
+
+        const timeEl = document.createElement("div");
+        timeEl.className = "post-time";
+        if(data.createdAt && data.createdAt.toDate){
+            timeEl.textContent = data.createdAt.toDate().toLocaleString("ko-KR");
+        }
+
+        card.appendChild(nameEl);
+        card.appendChild(textEl);
+        card.appendChild(timeEl);
+        memoListEl.appendChild(card);
+    });
+}, () => {
+    memoLoadingEl.textContent = "글을 불러오지 못했어요. 잠시 후 다시 시도해주세요.";
+    memoLoadingEl.style.display = "block";
+});
+
+window.showMemoForm = function(){
+    document.getElementById("memo-form").style.display = "block";
+    document.querySelector("#memo-screen .add-btn").style.display = "none";
+};
+window.hideMemoForm = function(){
+    document.getElementById("memo-form").style.display = "none";
+    document.querySelector("#memo-screen .add-btn").style.display = "block";
+    document.getElementById("memo-form-error").style.display = "none";
+};
+
+window.submitMemo = async function(){
+    const pw = document.getElementById("memo-pw-input").value;
+    const name = document.getElementById("memo-name-input").value.trim();
+    const text = document.getElementById("memo-text-input").value.trim();
+    const errorEl = document.getElementById("memo-form-error");
+    errorEl.style.display = "none";
+
+    if(pw !== MEMO_PASSWORD){
+        errorEl.textContent = "비밀번호가 올바르지 않습니다.";
+        errorEl.style.display = "block";
+        return;
+    }
+    if(!name){
+        errorEl.textContent = "닉네임을 입력해주세요.";
+        errorEl.style.display = "block";
+        return;
+    }
+    if(!text){
+        errorEl.textContent = "내용을 입력해주세요.";
+        errorEl.style.display = "block";
+        return;
+    }
+
+    const submitBtn = document.getElementById("memo-submit-btn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "등록 중...";
+
+    try{
+        await addDoc(collection(db, "memos"), {
+            name, text,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById("memo-pw-input").value = "";
+        document.getElementById("memo-name-input").value = "";
+        document.getElementById("memo-text-input").value = "";
+        window.hideMemoForm();
+    }catch(e){
+        errorEl.textContent = "등록에 실패했어요. 잠시 후 다시 시도해주세요.";
+        errorEl.style.display = "block";
+    }finally{
+        submitBtn.disabled = false;
+        submitBtn.textContent = "등록";
+    }
+};
+</script>
+</body>
+</html>
